@@ -13,7 +13,7 @@ import javax.persistence.*;
 @Table(name = "member")
 @Getter @Setter
 @ToString
-public class Member {
+public class Member extends BaseEntity{
 
     @Id
     @Column(name = "member_id")
@@ -36,9 +36,8 @@ public class Member {
         member.setAddress(joinFormDto.getAddress());
         String password = passwordEncoder.encode(joinFormDto.getPassword());
         member.setPassword(password);
-        member.setRole(Role.USER);
+        member.setRole(Role.ADMIN);
         return member;
     }
-
 }
 
