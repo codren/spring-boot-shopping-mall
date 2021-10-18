@@ -84,8 +84,29 @@ public class OrderService {
 
     // 주문 취소
     public void orderCancel(Long orderId) {
-
         Order order = orderRepository.findById(orderId).orElseThrow(EntityNotFoundException::new);
         order.orderCancel();
     }
+
+
+    // 장바구니 상품(들) 주문
+    public Long orders(List<OrderDto> orderDtoList, String email) {
+
+        // 로그인한 유저 조회
+        Member member = memberRepository.findByEmail(email);
+
+        // orderDto 객체를 이용하여 item 객체와 count 값을 얻어낸 뒤, 이를 이용하여 OrderItem 객체(들) 생성
+        List<OrderItem> orderItemList = new ArrayList<>();
+        for (OrderDto orderDto : orderDtoList) {
+            Item item = itemRepository.findById(orderDto.getItemId()).orElseThrow(EntityNotFoundException::new);
+            OrderItem orderItem = OrderItem.createOrderItem(item, orderDto.getCount());
+            orderItemList.add(orderItem);
+        }
+
+        //Order Entity 클래스에 존재하는 createOrder 메소드로 Order 생성 및 저장
+        Order order = Order.createOrder(member, orderItemList);
+        orderRepository.save(order);
+        return order.getId();
+    }
+
 }
